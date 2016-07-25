@@ -72,6 +72,8 @@
             this.gtitle = new System.Windows.Forms.TextBox();
             this.hacker = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.追加で開くToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -248,6 +250,8 @@
             // 
             this.fILEToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OPEN,
+            this.追加で開くToolStripMenuItem,
+            this.toolStripSeparator3,
             this.xMLで保存ToolStripMenuItem,
             this.CONVERTTXT,
             this.CONVERTDAT});
@@ -455,6 +459,18 @@
             this.label6.TabIndex = 18;
             this.label6.Text = "hacker";
             // 
+            // 追加で開くToolStripMenuItem
+            // 
+            this.追加で開くToolStripMenuItem.Name = "追加で開くToolStripMenuItem";
+            this.追加で開くToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.追加で開くToolStripMenuItem.Text = "追加で開く";
+            this.追加で開くToolStripMenuItem.Click += new System.EventHandler(this.追加で開くToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -533,6 +549,8 @@
         private System.Windows.Forms.ToolStripMenuItem 降順んーあZAToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 国別ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 国別ZAToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem 追加で開くToolStripMenuItem;
     }
 }
 

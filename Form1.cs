@@ -102,6 +102,22 @@ namespace WindowsFormsApplication1
         }
 
 
+        private void 追加で開くToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "xml(*.xml)|*.xml|ALL FILES(*.*)|*.*";
+            ofd.Title = "SELECT FILE";
+            ofd.RestoreDirectory = true;
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                if (ofd.FileName.Contains("xml"))
+                {
+                    parsexml_add(ofd.FileName);
+                }
+            }
+        }
+
+
         private void SAVE_Click(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode != null)
@@ -136,6 +152,8 @@ namespace WindowsFormsApplication1
 
 
         }
+
+
 
         //ｘｍｌぱさ
         private void parsexml(string fs)
@@ -214,6 +232,151 @@ namespace WindowsFormsApplication1
                                     }
                                     treeView1.Nodes.Add(gnode);
                                 }
+                            }
+
+                        }
+                    }
+                }
+            }
+            catch (System.Xml.XmlException ex)
+            {
+                //XMLによる例外をキャッチ
+                MessageBox.Show(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                MessageBox.Show(debug + debug2);
+            }
+            finally
+            {
+
+            }
+
+
+
+        }
+
+
+        //ｘｍｌぱさ
+        private void parsexml_add(string fs)
+        {
+            string debug = "";
+            string debug2 = "";
+
+            try
+            {
+                XmlReaderSettings readerSettings = new XmlReaderSettings();
+                readerSettings.IgnoreComments = true;//海外れとろんのやつだと<!-- こめんとらいんがあるので対策
+                using (XmlReader reader = XmlReader.Create(fs, readerSettings))
+                {
+                    XmlDocument doc = new XmlDocument();
+
+                    TreeNode gnode = new TreeNode();
+                    TreeNode cnode = new TreeNode();
+
+
+                    //treeView1.Nodes.Clear();
+                    doc.Load(reader);
+
+                    XmlElement db = doc.DocumentElement;
+                    doc.PreserveWhitespace = false;
+                    bool nocrc = false; 
+
+
+                    if (db.HasChildNodes == true)
+                    {
+                        for (int i = 0; i < db.ChildNodes.Count; i++)
+                        {
+                            XmlNode game = db.ChildNodes[i];
+                            gnode = new TreeNode();
+                            gnode.Text = game.Attributes.GetNamedItem("title").Value;
+                            debug = gnode.Text;
+
+                            if (game.HasChildNodes == true)
+                            {
+                                for (int l = 0; l < game.ChildNodes.Count; l++)
+                                {
+                                    XmlNode ver = game.ChildNodes[l];
+
+                                    //同名ゲームver違は公式だとぐるーぷ化してあるが、このえでただと別げーとして処理
+                                    if (l > 0)
+                                    {
+                                        gnode = new TreeNode();
+                                        gnode.Text = game.Attributes.GetNamedItem("title").Value + "(CRC:" + ver.Attributes.GetNamedItem("CRC").Value + ")";
+                                    }
+                                    gnode.Tag = ver.Attributes.GetNamedItem("CRC").Value.PadLeft(8, ('0'));//SDガンダムが7桁のため
+                                    gnode.Name = ver.Attributes.GetNamedItem("title").Value;
+
+                                    cnode = new TreeNode();
+                                    cnode.Text = "(M)";
+                                    cnode.Tag = gnode.Tag;
+                                    gnode.Nodes.Add(cnode);
+
+                                    if (ver.HasChildNodes == true)
+                                    {
+                                        for (int j = 0; j < ver.ChildNodes.Count; j++)
+                                        {
+                                            XmlNode cheat = ver.ChildNodes[j];
+                                            cnode = new TreeNode();
+                                            cnode.Tag = cheat.InnerText;
+                                            cnode.Text = cheat.Attributes.GetNamedItem("name").Value;
+                                            cnode.Name = cheat.Attributes.GetNamedItem("format").Value;
+
+                                            XmlNode testNode = cheat.Attributes["hacker"];//海外れとろんのやつだとhackerがないやつがある
+                                            if (testNode != null)
+                                            {
+                                                cnode.ToolTipText = cheat.Attributes.GetNamedItem("hacker").Value;
+                                            }
+
+                                            debug2 = cnode.Text;
+                                            gnode.Nodes.Add(cnode);
+                                            nocrc = false;
+
+                                            foreach (TreeNode n in treeView1.Nodes)
+                                            {
+                                                string crc = n.FirstNode.Tag.ToString();
+                                                if (crc == gnode.Tag.ToString())
+                                                {
+                                                    bool doubled = false;
+                                                    foreach (TreeNode m in n.Nodes)
+                                                    {
+                                                        if (m.Tag.ToString() == cheat.InnerText)
+                                                        {
+                                                            doubled = true;
+                                                        }
+                                                    }
+                                                    if (doubled == false) {
+
+                                                        cnode = new TreeNode();
+                                                        cnode.Tag = cheat.InnerText;
+                                                        cnode.Text = cheat.Attributes.GetNamedItem("name").Value;
+                                                        cnode.Name = cheat.Attributes.GetNamedItem("format").Value;
+
+                                                        if (testNode != null)
+                                                        {
+                                                            cnode.ToolTipText = cheat.Attributes.GetNamedItem("hacker").Value;
+                                                        }
+                                                        n.Nodes.Add(cnode);
+                                                    }
+                                                    nocrc = false;
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    nocrc = true;
+                                                }
+                                            }
+
+                                        }
+                                        if (nocrc == true) { 
+                                        treeView1.Nodes.Add(gnode);
+                                        nocrc = false;
+                                        }
+                                }
+
+                                   
+                                    }
                             }
 
                         }
@@ -1345,5 +1508,6 @@ namespace WindowsFormsApplication1
                 return 0;
             }
         }
+
     }
 }
